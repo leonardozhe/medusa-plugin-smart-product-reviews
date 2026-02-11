@@ -4,6 +4,13 @@ import { useQuery } from "@tanstack/react-query"
 import { Star } from "@medusajs/icons"
 import React from "react"
 
+// Widget configuration types
+interface WidgetConfig {
+  id: string
+  zone: string[]
+  component: React.ComponentType<DetailWidgetProps>
+}
+
 /**
  * Product Reviews Widget
  * 
@@ -42,7 +49,7 @@ export function ProductReviewsWidget({
   return (
     <Container>
       <div className="flex items-center justify-between mb-2">
-        <Heading level="h4">Product Reviews</Heading>
+        <Heading level="h3">Product Reviews</Heading>
         <Badge color="blue">{reviewCount} reviews</Badge>
       </div>
       
@@ -113,7 +120,7 @@ export function ProductReviewRequestsWidget({
   return (
     <Container>
       <div className="flex items-center justify-between mb-2">
-        <Heading level="h4">Review Requests</Heading>
+        <Heading level="h3">Review Requests</Heading>
         {pendingCount > 0 && (
           <Badge color="orange">{pendingCount} pending</Badge>
         )}
@@ -213,7 +220,7 @@ export function ProductReviewDetails({ reviewId }: { reviewId: string }) {
       {review && (
         <div className="space-y-4">
           <div>
-            <Heading level="h4">{review.title}</Heading>
+            <Heading level="h3">{review.title}</Heading>
             <div className="flex mt-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
@@ -244,3 +251,17 @@ export function ProductReviewDetails({ reviewId }: { reviewId: string }) {
     </Container>
   )
 }
+
+// Export widgets configuration for Medusa Admin
+export const widgets: WidgetConfig[] = [
+  {
+    id: "product-reviews-widget",
+    zone: ["product.details.after"],
+    component: ProductReviewsWidget,
+  },
+  {
+    id: "product-review-requests-widget",
+    zone: ["product.details.after"],
+    component: ProductReviewRequestsWidget,
+  },
+]
