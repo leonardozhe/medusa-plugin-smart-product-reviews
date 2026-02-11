@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.27] - 2025-02-11
+
+### Fixed
+- Corrected admin index exports for widgets and routes
+- Fixed route component references (productReviewsRoute, productReviewRequestsRoute)
+
 ## [0.0.26] - 2025-02-11
 
 ### Fixed
