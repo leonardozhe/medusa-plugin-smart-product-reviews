@@ -8,38 +8,6 @@
  * @author Modified for Medusa 2.13 compatibility by leonardozhe
  */
 
-export default {
-  id: "product-reviews-admin",
-  label: "Product Reviews",
-  
-  // Custom routes
-  routes: [
-    {
-      path: "/reviews",
-      label: "Product Reviews",
-      component: () => import("./routes").then(m => m.productReviewsRoute)
-    },
-    {
-      path: "/review-requests",
-      label: "Review Requests",
-      component: () => import("./routes").then(m => m.productReviewRequestsRoute)
-    }
-  ],
-
-  // Menu items
-  menuItems: [
-    {
-      label: "Product Reviews",
-      path: "/reviews",
-      icon: "Stars"
-    },
-    {
-      label: "Review Requests",
-      path: "/review-requests",
-      icon: "Envelope"
-    }
-  ],
-
-  // Widgets - explicitly set to empty array
-  widgets: []
-}
+// Admin extension disabled for Medusa v2.13
+// Routes and menu items are configured through the main plugin
+export default null

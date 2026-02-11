@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.34] - 2025-02-11
+
+### Fixed
+- Disabled admin extension (export default null) to test if this resolves widgets error
+- Backend plugin functionality remains intact
+
+## [0.0.33] - 2025-02-11
+
+### Fixed
+- Disabled admin extension (export default null) to isolate white screen issue
+- Backend plugin functionality remains intact
+
 ## [0.0.32] - 2025-02-11
 
 ### Fixed

@@ -1,6 +1,6 @@
 {
   "name": "@leonardozhe/medusa-plugin-product-reviews",
-  "version": "0.0.32",
+  "version": "0.0.34",
   "description": "A plugin that enables customer product reviews for Medusa v2.13+.",
   "author": "leonardozhe",
   "license": "MIT",
