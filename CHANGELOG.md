@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.29] - 2025-02-11
+
+### Fixed
+- Fixed admin white screen issue by properly exporting widgets array in admin/index.ts
+- Widgets are now correctly imported and exported in the default admin extension object
+
 ## [0.0.28] - 2025-02-11
 
 ### Fixed
