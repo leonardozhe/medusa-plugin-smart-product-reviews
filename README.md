@@ -5,7 +5,7 @@ A plugin that enables customer product reviews for Medusa v2.13+.
 ## Installation
 
 ```bash
-yarn add medusa-plugin-product-reviews
+yarn add @leonardozhe/medusa-plugin-product-reviews
 ```
 
 ## Configuration
@@ -16,7 +16,7 @@ Add to your `medusa.config.js`:
 module.exports = {
   plugins: [
     {
-      resolve: "medusa-plugin-product-reviews",
+      resolve: "@leonardozhe/medusa-plugin-product-reviews",
       options: {
         auto_approve: false,
         max_images: 5
@@ -26,7 +26,7 @@ module.exports = {
   admin: {
     extensions: [
       {
-        resolve: "medusa-plugin-product-reviews/admin"
+        resolve: "@leonardozhe/medusa-plugin-product-reviews/admin"
       }
     ]
   }

@@ -46,6 +46,13 @@ export class ProductReview extends SoftDeletableEntity {
   })
   images: Image[];
 
+  @Column({
+    type: "varchar",
+    nullable: false,
+    default: "pending"
+  })
+  status: "pending" | "approved" | "rejected";
+
   @BeforeInsert()
   private beforeInsert(): void {
     this.id = generateEntityId(this.id, "p_rev");

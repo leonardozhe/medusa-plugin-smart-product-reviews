@@ -54,6 +54,18 @@ export const routes: RouteConfig[] = [
     method: "delete",
     handlers: [wrapHandler(deleteProductReview)],
   },
+{
+  requiredAuth: true,
+  path: "/admin/product-reviews/:id/approve",
+  method: "post",
+  handlers: [wrapHandler(approveProductReview)],
+},
+{
+  requiredAuth: true,
+  path: "/admin/product-reviews/:id/reject",
+  method: "post",
+  handlers: [wrapHandler(rejectProductReview)],
+},
 ];
 
 export const defaultProductReviewRelations = ["images", "customer"];
@@ -121,6 +133,8 @@ async function listProductReviews(req: Request, res: Response) {
   const [reviews, count] = await productReviewService.listAndCount(
     {
       ...(selector as Selector<ProductReview>),
+      // Only return approved reviews for storefront display
+      status: "approved",
     },
     {
       order: { updated_at: "DESC" },
@@ -175,4 +189,30 @@ async function deleteProductReview(req: Request, res: Response) {
   await reviewService.delete(id);
 
   res.status(200).json({ success: true });
+}
+
+async function approveProductReview(req: Request, res: Response) {
+  const reviewService = req.scope.resolve<ProductReviewService>("productReviewService");
+  const { id } = req.params;
+
+  const review = await reviewService.retrieve(id);
+  
+  if (!review) throw new MedusaError(MedusaError.Types.INVALID_DATA, "Could not find review");
+
+  await reviewService.update(id, { status: "approved" });
+  
+  res.status(200).json({ success: true, status: "approved" });
+}
+
+async function rejectProductReview(req: Request, res: Response) {
+  const reviewService = req.scope.resolve<ProductReviewService>("productReviewService");
+  const { id } = req.params;
+
+  const review = await reviewService.retrieve(id);
+  
+  if (!review) throw new MedusaError(MedusaError.Types.INVALID_DATA, "Could not find review");
+
+  await reviewService.update(id, { status: "rejected" });
+  
+  res.status(200).json({ success: true, status: "rejected" });
 }

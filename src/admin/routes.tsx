@@ -37,6 +37,44 @@ function ProductReviewsPage() {
     }
   })
 
+  const approveMutation = useMutation({
+    mutationFn: async (reviewId: string) => {
+      const response = await fetch(`/admin/product-reviews/${reviewId}/approve`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      return response.json()
+    },
+    onSuccess: () => {
+      toast.success("Review approved successfully")
+      refetch()
+    },
+    onError: () => {
+      toast.error("Failed to approve review")
+    }
+  })
+
+  const rejectMutation = useMutation({
+    mutationFn: async (reviewId: string) => {
+      const response = await fetch(`/admin/product-reviews/${reviewId}/reject`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      return response.json()
+    },
+    onSuccess: () => {
+      toast.success("Review rejected successfully")
+      refetch()
+    },
+    onError: () => {
+      toast.error("Failed to reject review")
+    }
+  })
+
   const deleteMutation = useMutation({
     mutationFn: async (reviewId: string) => {
       const response = await fetch(`/admin/product-reviews/${reviewId}`, {
@@ -109,6 +147,24 @@ function ProductReviewsPage() {
                       : "N/A"}
                   </td>
                   <td className="px-4 py-3 text-right">
+                    {review.status === "pending" && (
+                      <div className="flex gap-2 justify-end">
+                        <Button
+                          variant="primary"
+                          size="small"
+                          onClick={() => approveMutation.mutate(review.id)}
+                        >
+                          Approve
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="small"
+                          onClick={() => rejectMutation.mutate(review.id)}
+                        >
+                          Reject
+                        </Button>
+                      </div>
+                    )}
                     <Button
                       variant="danger"
                       size="small"
