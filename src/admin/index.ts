@@ -12,21 +12,28 @@ export default {
   label: "Product Reviews",
   
   // Widget definitions for product details page
-  widgets: {
-    "product.details.after": {
+  widgets: [
+    {
+      id: "product-reviews-widget",
+      zone: ["product.details.after"],
       component: () => import("./widgets").then(m => m.ProductReviewsWidget)
+    },
+    {
+      id: "product-review-requests-widget",
+      zone: ["product.details.after"],
+      component: () => import("./widgets").then(m => m.ProductReviewRequestsWidget)
     }
-  },
+  ],
 
   // Custom routes
   routes: [
     {
       path: "/reviews",
-      component: () => import("./routes").then(m => m.ProductReviewsPage)
+      component: () => import("./routes").then(m => m.productReviewsRoute)
     },
     {
       path: "/review-requests",
-      component: () => import("./routes").then(m => m.ProductReviewRequestsPage)
+      component: () => import("./routes").then(m => m.productReviewRequestsRoute)
     }
   ],
 
