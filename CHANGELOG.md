@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.28] - 2025-02-11
+
+### Fixed
+- Simplified admin config by removing widgets array (moved to widgets.tsx)
+
 ## [0.0.27] - 2025-02-11
 
 ### Fixed
