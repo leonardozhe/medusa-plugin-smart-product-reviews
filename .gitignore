@@ -4,6 +4,7 @@ node_modules
 # Development files
 .roo/
 .yarn/
+plans/
 
 # Build outputs
 dist
