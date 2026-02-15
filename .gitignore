@@ -1,6 +1,10 @@
 # Dependencies
 node_modules
 
+# Development files
+.roo/
+.yarn/
+
 # Build outputs
 dist
 *.tsbuildinfo
