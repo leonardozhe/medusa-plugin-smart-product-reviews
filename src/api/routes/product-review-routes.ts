@@ -1,218 +1,57 @@
-import wrapHandler from "@medusajs/medusa/dist/api/middlewares/await-middleware";
-import { validator } from "@medusajs/medusa/dist/utils/validator";
-import { Request, Response } from "express";
-import ProductReviewService from "../../services/product-review";
-import { omit } from "lodash";
-import {
-  CreateProductReviewReq,
-  StoreGetProductReviewStatsParams,
-  StoreGetProductReviewsParams,
-  UpdateProductReviewReq,
-} from "../../validators";
-import { MedusaError } from "medusa-core-utils";
-import { Customer, CustomerService, OrderService, Selector } from "@medusajs/medusa";
-import { RouteConfig } from "..";
-import { ProductReviewRequestService } from "../../services";
-import { ProductReview } from "../../models";
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework"
+import { z } from "zod"
 
-export const routes: RouteConfig[] = [
-  {
-    requiredAuth: false,
-    path: "/store/product-reviews",
-    method: "get",
-    handlers: [wrapHandler(listProductReviews)],
-  },
-  {
-    requiredAuth: false,
-    path: "/store/product-reviews/stats",
-    method: "get",
-    handlers: [wrapHandler(productReviewStats)],
-  },
-  {
-    requiredAuth: true,
-    path: "/store/product-reviews",
-    method: "post",
-    handlers: [wrapHandler(createProductReview)],
-  },
-  {
-    requiredAuth: true,
-    path: "/store/product-reviews/:product_review_id",
-    method: "post",
-    handlers: [wrapHandler(updateProductReview)],
-  },
+const CreateProductReviewSchema = z.object({
+  product_id: z.string(),
+  customer_id: z.string().optional(),
+  title: z.string().min(1).max(100),
+  content: z.string().min(1).max(2000),
+  rating: z.number().int().min(1).max(5),
+  image_urls: z.array(z.string().url()).optional(),
+})
 
-  // Admin API's
-  {
-    requiredAuth: true,
-    path: "/admin/product-reviews",
-    method: "get",
-    handlers: [wrapHandler(listProductReviews)],
-  },
-  {
-    requiredAuth: true,
-    path: "/admin/product-reviews/:id",
-    method: "delete",
-    handlers: [wrapHandler(deleteProductReview)],
-  },
-{
-  requiredAuth: true,
-  path: "/admin/product-reviews/:id/approve",
-  method: "post",
-  handlers: [wrapHandler(approveProductReview)],
-},
-{
-  requiredAuth: true,
-  path: "/admin/product-reviews/:id/reject",
-  method: "post",
-  handlers: [wrapHandler(rejectProductReview)],
-},
-];
+export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
+  try {
+    const validatedData = CreateProductReviewSchema.parse(req.body)
+    
+    const productReviewService = req.scope.resolve("productReviewService") as any
+    
+    const review = await productReviewService.create({
+      ...validatedData,
+      customer_id: validatedData.customer_id || (req as any).auth_context?.actor_id,
+    })
 
-export const defaultProductReviewRelations = ["images", "customer"];
-
-async function _validatedCustomer(req: Request): Promise<Customer> {
-  const customerService = req.scope.resolve<CustomerService>("customerService");
-
-  if (req.user?.customer_id) return await customerService.retrieve(req.user.customer_id);
-
-  const requestId = req.body.review_request_id || req.query.review_request_id || req.params.review_request_id;
-
-  if (!requestId) return null;
-
-  const requestService = req.scope.resolve<ProductReviewRequestService>("productReviewRequestService");
-
-  const request = await requestService.retrieve(requestId, { relations: ["order", "order.customer"] });
-
-  return request?.order?.customer;
-}
-
-async function createProductReview(req: Request, res: Response) {
-  const productReviewService = req.scope.resolve<ProductReviewService>("productReviewService");
-
-  const validated = await validator(CreateProductReviewReq, req.body);
-
-  const customer = await _validatedCustomer(req);
-
-  if (!customer) throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "No customer found for request");
-
-  const review = await productReviewService.create({
-    ...validated,
-    customer_id: customer.id,
-  });
-
-  res.json({ review });
-}
-
-async function listProductReviews(req: Request, res: Response) {
-  const productReviewService = req.scope.resolve<ProductReviewService>("productReviewService");
-  const orderService = req.scope.resolve<OrderService>("orderService");
-
-  const validated = await validator(StoreGetProductReviewsParams, req.query);
-  let filter = validated;
-
-  if (validated.order_id) {
-    const order = await orderService.retrieve(validated.order_id, {
-      relations: ["items", "items.variant", "items.variant.product"],
-    });
-
-    if (!order) throw new MedusaError(MedusaError.Types.INVALID_DATA, "No reviews found matching order");
-
-    filter.product_id = order?.items.map((item) => item.variant.product_id);
-    filter.customer_id = order?.customer_id;
-    delete filter.order_id;
+    res.status(201).json({ product_review: review })
+  } catch (error: any) {
+    res.status(400).json({ error: error.message })
   }
+}
 
-  const selector: Omit<StoreGetProductReviewsParams, "fields" | "expand" | "offset" | "limit"> = omit(
-    validated,
-    "fields",
-    "expand",
-    "offset",
-    "limit"
-  );
-
-  const [reviews, count] = await productReviewService.listAndCount(
-    {
-      ...(selector as Selector<ProductReview>),
-      // Only return approved reviews for storefront display
+export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
+  try {
+    const query = req.scope.resolve("query") as any
+    
+    const filters: any = {
       status: "approved",
-    },
-    {
-      order: { updated_at: "DESC" },
-      skip: validated.offset,
-      take: validated.limit,
-      select: validated.fields ? (validated.fields.split(",") as (keyof ProductReview)[]) : undefined,
-      relations: validated.expand ? [...new Set(validated.expand.split(","))] : defaultProductReviewRelations,
     }
-  );
+    
+    if (req.query.product_id) {
+      filters.product_id = req.query.product_id
+    }
+    
+    const reviews = await query.graph({
+      entity: "product-review",
+      fields: ["id", "rating", "title", "content", "created_at"],
+      links: {
+        "product-review-image": {
+          fields: ["id", "url"],
+        },
+      },
+      filters,
+    })
 
-  res.status(200).json({ reviews, count });
-}
-
-async function productReviewStats(req: Request, res: Response) {
-  const productReviewService = req.scope.resolve<ProductReviewService>("productReviewService");
-
-  const validated = await validator(StoreGetProductReviewStatsParams, req.query);
-
-  const stats = await productReviewService.stats(validated);
-
-  res.status(200).json({ stats });
-}
-
-async function updateProductReview(req: Request, res: Response) {
-  const productReviewService = req.scope.resolve<ProductReviewService>("productReviewService");
-
-  const validated = await validator(UpdateProductReviewReq, req.body);
-
-  const customer = await _validatedCustomer(req);
-
-  if (!customer) throw new MedusaError(MedusaError.Types.INVALID_DATA, "No customer found for request");
-
-  const currentReview = await productReviewService.retrieve(validated.id);
-
-  if (!currentReview || currentReview.customer_id !== customer.id)
-    throw new MedusaError(MedusaError.Types.INVALID_DATA, "Review does not exist or does not belong to customer");
-
-  const review = await productReviewService.update(validated);
-
-  res.json({ review });
-}
-
-async function deleteProductReview(req: Request, res: Response) {
-  const reviewService = req.scope.resolve<ProductReviewService>("productReviewService");
-
-  const { id } = req.params;
-
-  const review = await reviewService.retrieve(id);
-
-  if (!review) throw new MedusaError(MedusaError.Types.INVALID_DATA, "Could not find review");
-
-  await reviewService.delete(id);
-
-  res.status(200).json({ success: true });
-}
-
-async function approveProductReview(req: Request, res: Response) {
-  const reviewService = req.scope.resolve<ProductReviewService>("productReviewService");
-  const { id } = req.params;
-
-  const review = await reviewService.retrieve(id);
-  
-  if (!review) throw new MedusaError(MedusaError.Types.INVALID_DATA, "Could not find review");
-
-  await reviewService.update(id, { status: "approved" });
-  
-  res.status(200).json({ success: true, status: "approved" });
-}
-
-async function rejectProductReview(req: Request, res: Response) {
-  const reviewService = req.scope.resolve<ProductReviewService>("productReviewService");
-  const { id } = req.params;
-
-  const review = await reviewService.retrieve(id);
-  
-  if (!review) throw new MedusaError(MedusaError.Types.INVALID_DATA, "Could not find review");
-
-  await reviewService.update(id, { status: "rejected" });
-  
-  res.status(200).json({ success: true, status: "rejected" });
+    res.json({ product_reviews: reviews.data || reviews })
+  } catch (error: any) {
+    res.status(400).json({ error: error.message })
+  }
 }

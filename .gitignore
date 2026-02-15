@@ -1,7 +1,40 @@
+# Dependencies
 node_modules
+
+# Build outputs
 dist
+*.tsbuildinfo
+.tsbuildinfo
+
+# Logs
 *.log
-.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
 .env
 .env.local
+.env.*.local
+
+# Testing
 coverage
+.nyc_output
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Yarn
+.yarn/*
+!.yarn/patches.yml
+!.yarn/plugins.yml
+!.yarn/releases.yml

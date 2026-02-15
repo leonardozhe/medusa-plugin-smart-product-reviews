@@ -1,66 +1,51 @@
 {
-  "name": "@leonardozhe/medusa-plugin-product-reviews",
-  "version": "0.0.35",
-  "description": "A plugin that enables customer product reviews for Medusa v2.13+.",
-  "author": "leonardozhe",
-  "license": "MIT",
+  "name": "medusa-plugin-smart-product-reviews",
+  "version": "1.0.0",
+  "description": "A smart product reviews plugin for Medusa with moderation, image support, and admin management. Optimized for performance, aesthetics, and security.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "author": "leonardozhe",
   "repository": {
     "type": "git",
-    "url": "https://github.com/leonardozhe/medusa-plugin-product-reviews.git"
+    "url": "https://github.com/leonardozhe/medusa-plugin-smart-product-reviews.git"
   },
+  "homepage": "https://github.com/leonardozhe/medusa-plugin-smart-product-reviews",
+  "bugs": {
+    "url": "https://github.com/leonardozhe/medusa-plugin-smart-product-reviews/issues"
+  },
+  "license": "MIT",
   "keywords": [
     "medusa",
-    "ecommerce",
+    "medusa-plugin",
+    "medusa-v2",
     "product-reviews",
-    "headless"
+    "reviews",
+    "moderation",
+    "rating"
   ],
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org"
-  },
   "scripts": {
-    "build": "rm -rf dist && tsc --build || echo 'Build completed with warnings'",
-    "watch": "tsc --build --watch",
-    "prepublishOnly": "npm run build"
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest"
   },
-  "files": [
-    "dist"
-  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./admin": {
-      "types": "./dist/admin/index.d.ts",
-      "default": "./dist/admin/index.js"
-    },
     "./package.json": "./package.json"
   },
-  "dependencies": {
-    "@medusajs/framework": "^2.13.0",
-    "@medusajs/ui": "^4.1.1",
-    "@tanstack/react-query": "^5.90.20",
-    "body-parser": "^2.2.2",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.3",
-    "cors": "^2.8.6",
-    "express": "^5.2.1",
-    "lodash": "^4.17.23",
-    "multer": "^1.4.5-lts.1",
-    "typeorm": "^0.3.28"
-  },
   "peerDependencies": {
-    "@medusajs/framework": "^2.13.0",
-    "@medusajs/medusa": "^2.13.0",
-    "@medusajs/ui": "^4.0.0"
+    "@medusajs/framework": "^2.13.0"
+  },
+  "dependencies": {
+    "@medusajs/admin-sdk": "^2.13.0",
+    "@medusajs/ui": "^4.1.1",
+    "zod": "^3.23.0"
   },
   "devDependencies": {
-    "@medusajs/framework": "^2.13.0",
     "@medusajs/medusa": "^2.13.0",
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.0.0",
-    "typescript": "^5.3.0"
+    "@types/node": "^20.16.0",
+    "typescript": "^5.6.0"
   }
 }

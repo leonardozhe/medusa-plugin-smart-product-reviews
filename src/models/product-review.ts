@@ -1,60 +1,19 @@
-import { Customer, Image, Product, SoftDeletableEntity } from "@medusajs/medusa";
-import { BeforeInsert, Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne } from "typeorm";
-import { Max, Min } from "class-validator";
-import { generateEntityId } from "@medusajs/medusa/dist/utils";
+import { model } from "@medusajs/framework/utils"
 
-@Entity()
-export class ProductReview extends SoftDeletableEntity {
-  @Index()
-  @Column({ type: "varchar", nullable: false })
-  product_id: string;
+const ProductReview = model.define("product-review", {
+  id: model.id().primaryKey(),
+  product_id: model.text(),
+  customer_id: model.text().nullable(),
+  rating: model.number(),
+  title: model.text(),
+  content: model.text(),
+  status: model.enum(["pending", "approved", "rejected"]),
+  rejection_reason: model.text().nullable(),
+  helpful_count: model.number().default(0),
+  reported_count: model.number().default(0),
+  created_at: model.dateTime(),
+  updated_at: model.dateTime(),
+  deleted_at: model.dateTime().nullable(),
+})
 
-  @Index()
-  @Column({ type: "varchar", nullable: true })
-  product_variant_id: string;
-
-  @Column({ type: "varchar", nullable: true })
-  customer_id: string;
-
-  @ManyToOne(() => Customer)
-  @JoinColumn({ name: "customer_id" })
-  customer: Customer;
-
-  @Column({ type: "int" })
-  @Min(1)
-  @Max(5)
-  rating: number;
-
-  @ManyToOne(() => Product)
-  @JoinColumn({ name: "product_id" })
-  product: Product;
-
-  @Column({ nullable: false })
-  content: string;
-
-  @ManyToMany(() => Image, { cascade: ["insert"] })
-  @JoinTable({
-    name: "product_review_images",
-    joinColumn: {
-      name: "product_review_id",
-      referencedColumnName: "id",
-    },
-    inverseJoinColumn: {
-      name: "image_id",
-      referencedColumnName: "id",
-    },
-  })
-  images: Image[];
-
-  @Column({
-    type: "varchar",
-    nullable: false,
-    default: "pending"
-  })
-  status: "pending" | "approved" | "rejected";
-
-  @BeforeInsert()
-  private beforeInsert(): void {
-    this.id = generateEntityId(this.id, "p_rev");
-  }
-}
+export default ProductReview
