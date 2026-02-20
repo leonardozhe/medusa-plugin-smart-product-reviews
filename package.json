@@ -1,6 +1,6 @@
 {
   "name": "medusa-plugin-smart-product-reviews",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A smart product reviews plugin for Medusa with moderation, image support, and admin management. Optimized for performance, aesthetics, and security.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
