@@ -14,10 +14,18 @@ A comprehensive product reviews plugin for Medusa v2.13+, featuring review moder
 
 ## Installation
 
-1. Install the plugin in your Medusa project:
+1. Install the plugin from GitHub:
 
 ```bash
-npm install medusa-plugin-smart-product-reviews
+npm install git+https://github.com/leonardozhe/medusa-plugin-smart-product-reviews.git#v1.0.0
+```
+
+Or use pnpm/yarn:
+
+```bash
+pnpm add git+https://github.com/leonardozhe/medusa-plugin-smart-product-reviews.git#v1.0.0
+# or
+yarn add git+https://github.com/leonardozhe/medusa-plugin-smart-product-reviews.git#v1.0.0
 ```
 
 2. Add the plugin to your `medusa.config.ts`:
