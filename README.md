@@ -1,25 +1,25 @@
 # Medusa Product Reviews Plugin
 
-一个完整的 Medusa 2.13 商品评论功能插件，支持评论创建、审核和管理。
+A complete product review plugin for Medusa 2.13, supporting review creation, moderation, and management.
 
-## 功能特性
+## Features
 
-- ✅ 商品评论创建（需要客户登录）
-- ✅ 评论审核功能（管理员批准/拒绝）
-- ✅ 评论删除功能（通过工作流回滚）
-- ✅ Admin 评论列表管理页面
-- ✅ Store API 获取商品已批准评论
-- ✅ 评论平均评分计算
+- ✅ Product review creation (requires customer authentication)
+- ✅ Review moderation (admin approve/reject)
+- ✅ Review deletion (via workflow compensation)
+- ✅ Admin review list management page
+- ✅ Store API to fetch approved product reviews
+- ✅ Review average rating calculation
 
-## 安装
+## Installation
 
-### 1. 将插件复制到 Medusa 项目中
+### 1. Copy the plugin to your Medusa project
 
-将 `src` 目录的内容复制到你的 Medusa 项目的 `src` 目录中。
+Copy the contents of the `src` directory to the `src` directory of your Medusa project.
 
-### 2. 配置 medusa-config.ts
+### 2. Configure medusa-config.ts
 
-在 `medusa-config.ts` 中添加模块配置：
+Add the module configuration in `medusa-config.ts`:
 
 ```typescript
 module.exports = defineConfig({
@@ -27,36 +27,37 @@ module.exports = defineConfig({
   modules: [
     {
       resolve: "./src/modules/product-review",
+",
     },
   ],
 })
 ```
 
-### 3. 生成并运行数据库迁移
+### 3. Generate and run database migrations
 
 ```bash
 npx medusa db:generate productReview
 npx medusa db:migrate
 ```
 
-### 4. 重新启动服务器
+### 4. Restart the server
 
 ```bash
 npm run dev
 ```
 
-## API 路由
+## API Routes
 
 ### Store API
 
 #### POST /store/reviews
-创建商品评论（需要客户认证）
+Create a product review (requires customer authentication)
 
-**请求体头**:
+**Request Headers**:
 - `x-publishable-api-key`: Publishable API Key
 - `Authorization`: Bearer Token
 
-**请求体**:
+**Request Body**:
 ```json
 {
   "title": "string (optional)",
@@ -69,14 +70,14 @@ npm run dev
 ```
 
 #### GET /store/products/:id/reviews
-获取指定商品的已批准评论列表
+Fetch approved reviews for a specific product
 
-**查询参数**:
-- `limit`: 每页数量（默认: 10）
-- `offset`: 偏移量（默认: 0）
-- `order`: 排序（默认: -created_at）
+**Query Parameters**:
+- `limit`: Number of items per page (default: 10)
+- `offset`: Number of items to skip (default: 0)
+- `order`: Sort order (default: -created_at)
 
-**响应**:
+**Response**:
 ```json
 {
   "reviews": [...],
@@ -90,12 +91,12 @@ npm run dev
 ### Admin API
 
 #### GET /admin/reviews
-获取所有评论列表（需要管理员认证）
+Fetch all reviews (requires admin authentication)
 
 #### POST /admin/reviews/status
-批准或拒绝评论（批量操作）
+Approve or reject reviews (batch operation)
 
-**请求体**:
+**Request Body**:
 ```json
 {
   "ids": ["string"],
@@ -103,25 +104,25 @@ npm run dev
 }
 ```
 
-## 数据模型
+## Data Model
 
 ### Review
 
-| 字段 | 类型 | 描述 |
-|------|------|------|
-| id | string | 唯一标识符（主键） |
-| title | string? | 评论标题（可选） |
-| content | string | 评论内容（必填） |
-| rating | number | 评分（1-5，带约束） |
-| first_name | string | 评论者名 |
-| last_name | string | 评论者姓 |
-| status | enum | 状态：pending/approved/rejected |
-| product_id | string | 关联商品 ID（带索引） |
-| customer_id | string? | 客户 ID（可选） |
-| created_at | datetime | 创建时间 |
-| updated_at | datetime | 更新时间 |
+| Field | Type | Description |
+|-------|------|-------------|
+| id | string | Unique identifier (primary key) |
+| title | string? | Review title (optional) |
+| content | string | Review content (required) |
+| rating | number | Rating (1-5, with constraint) |
+| first_name | string | Reviewer first name |
+| last_name | string | Reviewer last name |
+| status | enum | Status: pending/approved/rejected |
+| product_id | string | Associated product ID (indexed) |
+| customer_id | string? | Customer ID (optional) |
+| created_at | datetime | Creation timestamp |
+| updated_at | datetime | Update timestamp |
 
-## 文件结构
+## File Structure
 
 ```
 src/
@@ -152,12 +153,12 @@ src/
     └── routes/reviews/page.tsx
 ```
 
-## 测试
+## Testing
 
-### 1. 创建测试客户
+### 1. Create a test customer
 
 ```bash
-# 获取注册令牌
+# Get registration token
 curl -X POST 'http://localhost:9000/auth/customer/emailpass/register' \
   -H 'Content-Type: application/json' \
   --data-raw '{
@@ -165,7 +166,7 @@ curl -X POST 'http://localhost:9000/auth/customer/emailpass/register' \
     "password": "password123"
   }'
 
-# 注册客户
+# Register customer
 curl -X POST 'http://localhost:9000/store/customers' \
   -H 'Authorization: Bearer {token}' \
   -H 'Content-Type: application/json' \
@@ -174,7 +175,7 @@ curl -X POST 'http://localhost:9000/store/customers' \
     "email": "test@example.com"
   }'
 
-# 获取认证令牌
+# Get auth token
 curl -X POST 'http://localhost:9000/auth/customer/emailpass' \
   -H 'Content-Type: application/json' \
   --data-raw '{
@@ -183,7 +184,7 @@ curl -X POST 'http://localhost:9000/auth/customer/emailpass' \
   }'
 ```
 
-### 2. 创建评论
+### 2. Create a review
 
 ```bash
 curl --location 'http://localhost:9000/store/reviews' \
@@ -200,7 +201,7 @@ curl --location 'http://localhost:9000/store/reviews' \
   }'
 ```
 
-### 3. 管理员审核评论
+### 3. Admin moderate review
 
 ```bash
 curl -X POST 'http://localhost:9000/admin/reviews/status' \
@@ -208,7 +209,7 @@ curl -X POST 'http://localhost:9000/admin/reviews/status' \
   -H 'Content-Type: application/json' \
   --data '{
     "ids": ["{review_id}"],
-{    "status": "approved"
+    "status": "approved"
   }'
 ```
 
